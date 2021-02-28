@@ -98,7 +98,7 @@ scz_results <- mclapply(1:nrow(model_settings), mc.cores = 15,
                                            
                                            # Return the fdp and power:
                                            return(data.frame("phenotype" = "fake_scz",
-                                                             "gene_set_type" = "pos_esnps_rsquared25",
+                                                             "ld_loci_type" = "pos_esnps_rsquared25",
                                                              "method" = "adapt_xgboost",
                                                              "variables" = "all",
                                                              "alpha" = alpha,
@@ -205,7 +205,7 @@ scz_results <- mclapply(1:nrow(model_settings), mc.cores = 15,
                                            
                                            # Return the fdp and power:
                                            return(data.frame("phenotype" = "fake_scz",
-                                                             "gene_set_type" = "pos_esnps_rsquared50",
+                                                             "ld_loci_type" = "pos_esnps_rsquared50",
                                                              "method" = "adapt_xgboost",
                                                              "variables" = "all",
                                                              "alpha" = alpha,
