@@ -7,10 +7,10 @@ library(np)
 
 # Positional + eSNPS
 pos_esnps_loc_snp_ld_loci_results <-
-  read_csv("data/kernel_smoothing/input/positional_esnps/positional_snp_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional_esnps/positional_snp_ld_loci_data.csv")
 # Positional
 pos_loc_snp_ld_loci_results <-
-  read_csv("data/kernel_smoothing/input/positional/positional_snp_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional/positional_snp_ld_loci_data.csv")
 
 # Find GCV bandwidths for each LD loci -----------------------------------
 
@@ -55,8 +55,8 @@ pos_loc_gcv <- get_gcv_bw(pos_loc_snp_ld_loci_results)
 
 # And save each:
 write_csv(pos_esnps_loc_gcv,
-          "data/kernel_smoothing/input/positional_esnps/ld_loci_gcv_bw.csv")
+          "data/kernel_smoothing/asd/input/positional_esnps/ld_loci_gcv_bw.csv")
 write_csv(pos_loc_gcv,
-          "data/kernel_smoothing/input/positional/ld_loci_gcv_bw.csv")
+          "data/kernel_smoothing/asd/input/positional/ld_loci_gcv_bw.csv")
 
 

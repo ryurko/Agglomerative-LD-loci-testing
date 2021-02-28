@@ -2,17 +2,19 @@
 #          SNPs that are positionally assigned to genes versus the ones that
 #          are assigned based on functional status. 
 
+# SCZ VERSION
+
 library(tidyverse)
 
 # Load the LD loci tables ------------------------------------------------
 
-# Starting with r^2 = 0.25 for ASD using Positional + eSNPs:
+# Starting with r^2 = 0.25 for scz using Positional + eSNPs:
 pos_esnps_gene_ld_loci_table <-
-  read_csv("data/adapt_results/positional_esnps/snp_gene_tables/asd_rsquared25_gene_ld_loci_table.csv")
+  read_csv("data/adapt_results/positional_esnps/snp_gene_tables/scz_rsquared25_gene_ld_loci_table.csv")
 
 # For Positional:
 pos_gene_ld_loci_table <-
-  read_csv("data/adapt_results/positional/snp_gene_tables/asd_rsquared25_gene_ld_loci_table.csv")
+  read_csv("data/adapt_results/positional/snp_gene_tables/scz_rsquared25_gene_ld_loci_table.csv")
 
 
 # Load the GENCODE table --------------------------------------------------
@@ -40,8 +42,8 @@ tidy_esnps_to_gene_table <-
 # Initialize the pipeline that will be used regardless of the type of result:
 add_snp_data_cols <- . %>%
   # Add the squared z stats columns:
-  mutate(scz_z_squared = (log(scz_or) / scz_se)^2,
-         asd_z_squared = (log(asd_or) / asd_se)^2,
+  mutate(asd_z_squared = (log(asd_or) / asd_se)^2,
+         scz_z_squared = (log(scz_or) / scz_se)^2,
          ea_z_squared = (ea_beta / ea_se)^2) %>%
   separate(hg38_id, into = c("chr38", "bp"), sep = ":", remove = FALSE) %>%
   separate(bp, into = c("bp", "bp2"), sep = "-", remove = TRUE) %>%
@@ -68,7 +70,7 @@ pos_snp_gene_results <- tidy_pos_snp_to_gene_table %>%
 
 # Save this table with gene info:
 write_csv(pos_snp_gene_results,
-          "data/kernel_smoothing/input/positional/positional_snp_gene_ld_loci_data.csv")
+          "data/kernel_smoothing/scz/input/positional/positional_snp_gene_ld_loci_data.csv")
 
 # Now make a version without the gene assignments:
 pos_snp_ld_loci_results <- pos_snp_gene_results %>%
@@ -76,19 +78,13 @@ pos_snp_ld_loci_results <- pos_snp_gene_results %>%
   distinct()
 # And save:
 write_csv(pos_snp_ld_loci_results,
-          "data/kernel_smoothing/input/positional/positional_snp_ld_loci_data.csv")
+          "data/kernel_smoothing/scz/input/positional/positional_snp_ld_loci_data.csv")
 
 # Next save the positional gene info:
 write_csv(filter(gene_type_table,
                  ensembl_id %in% unique(pos_gene_ld_loci_table$ensembl_id)) %>%
             dplyr::left_join(pos_gene_ld_loci_table, by = "ensembl_id"),
-          "data/kernel_smoothing/input/positional/gene_info.csv")
-# App copy
-write_csv(filter(gene_type_table,
-                 ensembl_id %in% unique(pos_gene_ld_loci_table$ensembl_id)) %>%
-            dplyr::left_join(pos_gene_ld_loci_table, by = "ensembl_id"),
-          "ld_loci_zoom_app/data/positional/gene_info.csv")
-
+          "data/kernel_smoothing/scz/input/positional/gene_info.csv")
 
 # Create and save Positional + eSNPs results ------------------------------
 
@@ -96,12 +92,7 @@ write_csv(filter(gene_type_table,
 write_csv(filter(gene_type_table,
                  ensembl_id %in% unique(pos_esnps_gene_ld_loci_table$ensembl_id)) %>%
             dplyr::left_join(pos_esnps_gene_ld_loci_table, by = "ensembl_id"),
-          "data/kernel_smoothing/input/positional_esnps/gene_info.csv")
-# App copy
-write_csv(filter(gene_type_table,
-                 ensembl_id %in% unique(pos_esnps_gene_ld_loci_table$ensembl_id)) %>%
-            dplyr::left_join(pos_esnps_gene_ld_loci_table, by = "ensembl_id"),
-          "ld_loci_zoom_app/data/positional_esnps/gene_info.csv")
+          "data/kernel_smoothing/scz/input/positional_esnps/gene_info.csv")
 
 
 # Next first make a table of the positional only SNPs for the Positional + eSNPs
@@ -149,7 +140,7 @@ pos_esnps_loc_snp_gene_results <- pos_esnps_loc_snp_gene_results %>%
 
 # Save this table with gene info:
 write_csv(pos_esnps_loc_snp_gene_results,
-          "data/kernel_smoothing/input/positional_esnps/positional_snp_gene_ld_loci_data.csv")
+          "data/kernel_smoothing/scz/input/positional_esnps/positional_snp_gene_ld_loci_data.csv")
 
 # Now make a version without the gene assignments:
 pos_esnps_loc_snp_ld_loci_results <- pos_esnps_loc_snp_gene_results %>%
@@ -157,7 +148,7 @@ pos_esnps_loc_snp_ld_loci_results <- pos_esnps_loc_snp_gene_results %>%
   distinct()
 # And save:
 write_csv(pos_esnps_loc_snp_ld_loci_results,
-          "data/kernel_smoothing/input/positional_esnps/positional_snp_ld_loci_data.csv")
+          "data/kernel_smoothing/scz/input/positional_esnps/positional_snp_ld_loci_data.csv")
 
 # Finally save the eSNPs only data with the associated gene assignments:
 pos_esnps_fun_snp_gene_results <- pos_esnps_fun_snp_gene_results %>%
@@ -171,75 +162,5 @@ pos_esnps_fun_snp_gene_results <- pos_esnps_fun_snp_gene_results %>%
   # And join the LD loci assignments:
   left_join(pos_esnps_gene_ld_loci_table, by = "ensembl_id")
 write_csv(pos_esnps_fun_snp_gene_results,
-          "data/kernel_smoothing/input/positional_esnps/functional_snp_gene_ld_loci_data.csv")
-# App copy
-write_csv(pos_esnps_fun_snp_gene_results,
-          "ld_loci_zoom_app/data/positional_esnps/functional_snp_gene_ld_loci_data.csv")
-
-
-# Create tables of SNP information for downloading in app -----------------
-
-
-# Load GWAS data to join --------------------------------------------------
-library(data.table)
-
-all_gwas_data <- fread("data/gwas/scz_asd_ea_gwas_results.csv") %>%
-  .[hg38_id != "",]
-
-# Start with the Positional + eSNPs table since that is more difficult
-
-# First set-up a SNP-gene table containing the type of annotation along with
-# the LD loci id
-pos_esnps_snp_gene_table <- pos_esnps_pairs %>%
-  separate(gene_snp_id, into = c("ensembl_id", "snp_id"), sep = "_") %>%
-  # Join the LD loci assignments
-  left_join(pos_esnps_gene_ld_loci_table, by = "ensembl_id") %>%
-  # Join the GWAS info:
-  left_join(all_gwas_data, by = c("snp_id" = "hg38_id")) %>%
-  # Only select the necessary columns:
-  dplyr::select(ld_loci_id, asd_rsid, snp_id, asd_a1, asd_a2,
-                # Gene membership and type
-                ensembl_id, is_positional, is_esnp,
-                # GWAS summary statistics
-                asd_or, asd_se, asd_p,
-                scz_or, scz_se, scz_p,
-                ea_beta, ea_se, ea_p) %>%
-  # Rename the GWAS columns:
-  dplyr::rename(rsid = asd_rsid, a1 = asd_a1, a2 = asd_a2) %>%
-  # Now break up the SNP id into the chromosome and bp columns:
-  separate(snp_id, into = c("chr", "bp"), sep = ":", remove = TRUE) %>%
-  separate(bp, into = c("bp", "bp2"), sep = "-", remove = TRUE) %>%
-  dplyr::select(-bp2) %>%
-  mutate(bp = as.numeric(bp),
-         chr = as.numeric(str_remove(chr, "chr")),
-         # Create a column with the GWAS catalog link:
-         gwas_catalog = paste0("https://www.ebi.ac.uk/gwas/variants/",
-                               rsid))
-# Save to the app data folder:
-write_csv(pos_esnps_snp_gene_table,
-          "ld_loci_zoom_app/data/positional_esnps/snp_gene_table.csv")
-
-
-# Now repeat with the Positional results ----------------------------------
-
-pos_snp_gene_table <- pos_snp_gene_results %>%
-  dplyr::select(-c(chr, hg19_id, scz_z_squared, asd_z_squared, ea_z_squared,
-                   gene_name, gene_chr, start, end, strand)) %>%
-  # Join the GWAS allele info:
-  left_join(dplyr::select(all_gwas_data, hg38_id, asd_rsid, asd_a1, asd_a2),
-            by = c("hg38_id")) %>%
-  # Rearrange then rename the columns:
-  dplyr::select(ld_loci_id, asd_rsid, hg38_chr, bp, asd_a1, asd_a2,
-                # Gene membership
-                ensembl_id,
-                # GWAS summary statistics
-                asd_or, asd_se, asd_p,
-                scz_or, scz_se, scz_p,
-                ea_beta, ea_se, ea_p) %>%
-  dplyr::rename(rsid = asd_rsid, chr = hg38_chr, a1 = asd_a1, a2 = asd_a2) %>%
-  mutate(gwas_catalog = paste0("https://www.ebi.ac.uk/gwas/variants/",
-                               rsid))
-write_csv(pos_snp_gene_table,
-          "ld_loci_zoom_app/data/positional/snp_gene_table.csv")
-
+          "data/kernel_smoothing/scz/input/positional_esnps/functional_snp_gene_ld_loci_data.csv")
 

@@ -156,19 +156,19 @@ get_gene_level_smooth_results <- function(snp_gene_ld_loci_data, bw_data,
 
 # Positional + eSNPS
 pos_esnps_loc_snp_ld_loci_results <-
-  read_csv("data/kernel_smoothing/input/positional_esnps/positional_snp_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional_esnps/positional_snp_ld_loci_data.csv")
 pos_esnps_loc_snp_gene_results <-
-  read_csv("data/kernel_smoothing/input/positional_esnps/positional_snp_gene_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional_esnps/positional_snp_gene_ld_loci_data.csv")
 pos_esnps_bw_data <-
-  read_csv("data/kernel_smoothing/input/positional_esnps/ld_loci_gcv_bw.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional_esnps/ld_loci_gcv_bw.csv")
 
 # Positional
 pos_loc_snp_ld_loci_results <-
-  read_csv("data/kernel_smoothing/input/positional/positional_snp_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional/positional_snp_ld_loci_data.csv")
 pos_loc_snp_gene_results <-
-  read_csv("data/kernel_smoothing/input/positional/positional_snp_gene_ld_loci_data.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional/positional_snp_gene_ld_loci_data.csv")
 pos_bw_data <-
-  read_csv("data/kernel_smoothing/input/positional/ld_loci_gcv_bw.csv")
+  read_csv("data/kernel_smoothing/asd/input/positional/ld_loci_gcv_bw.csv")
 
 
 # Generate the LD loci and gene-level results ----------------------------
@@ -191,7 +191,7 @@ pos_esnps_gene_level_smoothing <- pos_esnps_gene_level_smoothing %>%
   dplyr::rename(snp_id = hg38_id)
 # And save
 write_csv(pos_esnps_gene_level_smoothing,
-          "data/kernel_smoothing/output/positional_esnps/positional_gene_level_smoothing.csv")
+          "data/kernel_smoothing/asd/output/positional_esnps/positional_gene_level_smoothing.csv")
 # App copy
 write_csv(pos_esnps_gene_level_smoothing,
           "ld_loci_zoom_app/data/positional_esnps/positional_gene_level_smoothing.csv")
@@ -214,7 +214,7 @@ pos_gene_level_smoothing <- pos_gene_level_smoothing %>%
   mutate(is_fake_bp = as.numeric(is.na(hg38_id))) %>%
   dplyr::rename(snp_id = hg38_id)
 write_csv(pos_gene_level_smoothing,
-          "data/kernel_smoothing/output/positional/positional_gene_level_smoothing.csv")
+          "data/kernel_smoothing/asd/output/positional/positional_gene_level_smoothing.csv")
 # App copy
 write_csv(pos_gene_level_smoothing,
           "ld_loci_zoom_app/data/positional/positional_gene_level_smoothing.csv")
@@ -442,7 +442,7 @@ pos_esnps_ld_loci_level_smoothing <- pos_esnps_ld_loci_level_smoothing %>%
   dplyr::rename(snp_id = hg38_id) %>%
   mutate(is_fake_bp = as.numeric(is.na(snp_id)))
 write_csv(pos_esnps_ld_loci_level_smoothing,
-          "data/kernel_smoothing/output/positional_esnps/positional_ld_loci_level_smoothing.csv")
+          "data/kernel_smoothing/asd/output/positional_esnps/positional_ld_loci_level_smoothing.csv")
 # And a copy for the app data:
 write_csv(pos_esnps_ld_loci_level_smoothing,
           "ld_loci_zoom_app/data/positional/positional_ld_loci_level_smoothing.csv")
@@ -460,7 +460,7 @@ pos_ld_loci_level_smoothing <- pos_ld_loci_level_smoothing %>%
   dplyr::rename(snp_id = hg38_id) %>%
   mutate(is_fake_bp = as.numeric(is.na(snp_id)))
 write_csv(pos_ld_loci_level_smoothing,
-          "data/kernel_smoothing/output/positional/positional_ld_loci_level_smoothing.csv")
+          "data/kernel_smoothing/asd/output/positional/positional_ld_loci_level_smoothing.csv")
 # Copy for app
 write_csv(pos_ld_loci_level_smoothing,
           "ld_loci_zoom_app/data/positional/positional_ld_loci_level_smoothing.csv")
