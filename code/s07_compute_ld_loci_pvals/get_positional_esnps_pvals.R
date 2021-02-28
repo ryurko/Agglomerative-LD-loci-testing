@@ -12,7 +12,7 @@ library(RcppArmadillo)
 # Source the Rcpp functions -----------------------------------------------
 
 # Source the Rcpp functions:
-sourceCpp("code/s6_compute_ld_loci_pvals/sim_quad_test_stat_fast.cpp")
+sourceCpp("code/s06_compute_ld_loci_pvals/sim_quad_test_stat_fast.cpp")
 
 # R-squared .25 ----------------------------------------------------------------
 

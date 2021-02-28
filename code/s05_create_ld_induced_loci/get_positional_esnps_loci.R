@@ -1,4 +1,4 @@
-# PURPOSE: Create and save the LD induced loci using Positional assignment
+# PURPOSE: Create and save the LD induced loci using Positional + eSNPs assignment
 
 # WARNING: This code was used on a server distributing the construction of LD
 #          induced loci for each chr in parallel. 
@@ -9,7 +9,7 @@ library(parallel)
 library(snpcombineR)
 
 # Source the main functions
-source("code/s5_create_ld_induced_loci/form_ld_induced_loci.R")
+source("code/s05_create_ld_induced_loci/form_ld_induced_loci.R")
 
 # Init helper function for 
 flip_matrix <- function(x) {
@@ -22,7 +22,7 @@ flip_matrix <- function(x) {
 
 # Load the dataset
 tidy_snp_data <-
-  read_csv("data/input/tidy_snp_gene/server_version/positional.csv",
+  read_csv("data/input/tidy_snp_gene/server_version/positional_esnps.csv",
            col_types = list(col_character(), col_character(), col_double(),
                             col_double(), col_double()))
 
@@ -60,7 +60,7 @@ ld_loci_walk <-
                                     rho_threshold = sqrt(.25))
              # Save
              saveRDS(chr_ld_loci_results,
-                     paste0("data/ld_induced_loci/rsquared25/positional/chr",
+                     paste0("data/ld_induced_loci/rsquared25/positional_esnps/chr",
                             chr_i, "_results.rds"))
              
              return(chr_i)
@@ -78,7 +78,7 @@ ld_loci_walk <-
              numeric_snp_ref_genotypes <- as.matrix(
                data.table::fread(
                  paste0("data/ld_reference/chr_level/chr", chr_i, "_ref_genotypes.csv")))
-             
+
              # Get only this chr data:
              tidy_chr_snp_data <- tidy_snp_data %>%
                filter(gene_chr == chr_i) %>%
@@ -97,8 +97,8 @@ ld_loci_walk <-
                                     rho_threshold = sqrt(.5))
              # Save
              saveRDS(chr_ld_loci_results,
-                     paste0("data/ld_induced_loci/rsquared50/positional/chr",
-                            chr_i, "_results.rds"))
+                       paste0("data/ld_induced_loci/rsquared50/positional_esnps/chr",
+                              chr_i, "_results.rds"))
              
              return(chr_i)
              
