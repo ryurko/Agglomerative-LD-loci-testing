@@ -1,7 +1,7 @@
 # PURPOSE: Initialize helper functions for generating the kernel smoothing
 #          results for the upload shiny app data
 
-library(tidyverse)
+#library(np, lib.loc = "/home/ryurko/Rpackages")
 library(np)
 
 # Required input for the app will be two tables:
