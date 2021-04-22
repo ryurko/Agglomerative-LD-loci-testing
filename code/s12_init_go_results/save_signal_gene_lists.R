@@ -16,11 +16,21 @@ save_signal_gene_lists <-
     
     # Find the signals above the null cutoff:
     if (phenotype == "asd") {
+      
       ld_loci_signals_data <- ld_loci_smooth_results %>%
+        # Just above the null percentile
         filter(smooth_asd_zsquared >= null_95_percent)
-    } else {
+      
+    } else if (phenotype == "scz") {
+      
       ld_loci_signals_data <- ld_loci_smooth_results %>%
         filter(smooth_scz_zsquared >= null_95_percent)
+      
+    } else {
+      
+      ld_loci_signals_data <- ld_loci_smooth_results %>%
+        filter(smooth_ea_zsquared >= null_95_percent)
+      
     }
     ld_loci_signals_data <- ld_loci_signals_data %>%
       # Add the ld_loci_chr column:
@@ -86,19 +96,27 @@ save_signal_gene_lists <-
                         assign_type, "/functional_snp_gene_ld_loci_data.csv"))
       
       if (phenotype == "asd") {
+        
         functional_gene_data <- functional_gene_data %>%
-          # Only keep the rows with values above the null sims:
           filter(asd_z_squared >= qchisq(0.95, 1))
-      } else {
+        
+      } else if (phenotype == "scz") {
+        
         functional_gene_data <- functional_gene_data %>%
-          # Only keep the rows with values above the null sims:
           filter(scz_z_squared >= qchisq(0.95, 1))
+        
+      } else {
+        
+        functional_gene_data <- functional_gene_data %>%
+          filter(ea_z_squared >= qchisq(0.95, 1))
+        
       }
       functional_genes <- functional_gene_data %>%
         # Just for intergenic SNPs
         filter(is_positional == 0) %>%
         pull(ensembl_id) %>%
         unique()
+      
     } else {
       functional_genes <- NULL
     }
