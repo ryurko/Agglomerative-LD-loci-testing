@@ -27,6 +27,9 @@ asd_gene_ld_loci_results <-
 scz_gene_ld_loci_results <-
   read_csv("data/adapt_results/positional_esnps/snp_gene_tables/scz_rsquared25_gene_ld_loci_table.csv")
 
+# EA
+ea_gene_ld_loci_results <-
+  read_csv("data/adapt_results/positional_esnps/snp_gene_tables/ea_rsquared25_gene_ld_loci_table.csv")
 
 # Load signal genes -------------------------------------------------------
 
@@ -34,6 +37,8 @@ asd_signals_genes <-
   read_lines("data/adapt_results/gene_lists/signals/positional_esnps/asd_rsquared25_disc_genes.txt")
 scz_signals_genes <-
   read_lines("data/adapt_results/gene_lists/signals/positional_esnps/scz_rsquared25_disc_genes.txt")
+ea_signals_genes <-
+  read_lines("data/adapt_results/gene_lists/signals/positional_esnps/ea_rsquared25_disc_genes.txt")
 
 
 # Construct tables of sizes by length and SNPs  ---------------------------
@@ -54,9 +59,12 @@ gene_info_data <- tidy_snp_gene_data %>%
                             "Yes", "No"),
          is_scz_ld_loci = ifelse(ld_loci_id %in% scz_gene_ld_loci_results$ld_loci_id,
                             "Yes", "No"),
+         is_ea_ld_loci = ifelse(ld_loci_id %in% ea_gene_ld_loci_results$ld_loci_id,
+                                 "Yes", "No"),
          # Indicators for signal genes
          is_asd_sig = ifelse(ensembl_id %in% asd_signals_genes, "Yes", "No"),
-         is_scz_sig = ifelse(ensembl_id %in% scz_signals_genes, "Yes", "No"))
+         is_scz_sig = ifelse(ensembl_id %in% scz_signals_genes, "Yes", "No"),
+         is_ea_sig = ifelse(ensembl_id %in% ea_signals_genes, "Yes", "No"))
 
 # Convert Ensembl to Entrez ids -------------------------------------------
 
@@ -91,10 +99,6 @@ gencode_data$entrez_id <-
                         keytype = "ENSEMBL",
                         # Only use ids with a unique identifier
                         multiVals = "asNA")
-gencode_data %>%
-  filter(!(ensembl_id %in% gene_info_data$ensembl_id),
-         !is.na(entrez_id))
-# 2554 have unique IDs according to this.... but there are probably more
 
 # Perform initial KS tests ------------------------------------------------
 
@@ -108,6 +112,13 @@ scz_ks_test_result <-
   ks.test(pull(filter(gene_info_data, is_scz_ld_loci == "No"), n_snps),
           pull(filter(gene_info_data, is_scz_ld_loci == "Yes"), n_snps),
           alternative = "greater")
+
+# And EA
+ea_ks_test_result <-
+  ks.test(pull(filter(gene_info_data, is_ea_ld_loci == "No"), n_snps),
+          pull(filter(gene_info_data, is_ea_ld_loci == "Yes"), n_snps),
+          alternative = "greater")
+
 
 # Next with only the signal genes:
 asd_signal_ks_test_result <-
@@ -124,6 +135,12 @@ scz_signal_ks_test_result <-
           alternative = "greater")
 # D^+ = 0.15574, p-value < 2.2e-16
 
+# For EA
+ea_signal_ks_test_result <-
+  ks.test(pull(filter(gene_info_data, is_ea_ld_loci == "No"), n_snps),
+          pull(filter(gene_info_data, is_ea_sig == "Yes"), n_snps),
+          alternative = "greater")
+# D^+ = 0.15957, p-value < 2.2e-16
 
 # Create matching nulls using genes with Entrez IDs -----------------------
 
@@ -182,6 +199,11 @@ scz_signal_gene_info <- gene_info_data %>%
   filter(is_scz_sig == "Yes")
 scz_null_entrez_gene_info <- gene_info_data %>%
   filter(is_scz_ld_loci == "No", !is.na(entrez_id))
+# And for SCZ:
+ea_signal_gene_info <- gene_info_data %>%
+  filter(is_ea_sig == "Yes")
+ea_null_entrez_gene_info <- gene_info_data %>%
+  filter(is_ea_ld_loci == "No", !is.na(entrez_id))
 
 # For ASD - use 20 matching nulls, which have Entrez IDs
 asd_matching_null_genes  <-
@@ -197,6 +219,14 @@ scz_matching_null_genes  <-
                                 scz_signal_gene_info$n_snps,
                                 scz_null_entrez_gene_info$ensembl_id,
                                 scz_null_entrez_gene_info$n_snps,
+                                n_matches = 2)
+
+# For EA use 1 matching null, which have Entrez IDs
+ea_matching_null_genes  <-
+  find_matching_size_null_genes(ea_signal_gene_info$ensembl_id,
+                                ea_signal_gene_info$n_snps,
+                                ea_null_entrez_gene_info$ensembl_id,
+                                ea_null_entrez_gene_info$n_snps,
                                 n_matches = 2)
 
 
@@ -238,6 +268,11 @@ save_fuma_gene_list(c(scz_signal_gene_info$ensembl_id, scz_matching_null_genes),
                     "positional_esnps", "signals", "all", "scz", is_null = TRUE,
                     is_matched = TRUE, null_type = "n_snps", n_match = 2)
 
+# For EA:
+save_fuma_gene_list(c(ea_signal_gene_info$ensembl_id, ea_matching_null_genes),
+                    "positional_esnps", "signals", "all", "ea", is_null = TRUE,
+                    is_matched = TRUE, null_type = "n_snps", n_match = 1)
+
 # Save the null lists without matching, just using all nulls
 save_fuma_gene_list(c(asd_signal_gene_info$ensembl_id,
                       asd_null_entrez_gene_info$ensembl_id),
@@ -247,4 +282,10 @@ save_fuma_gene_list(c(asd_signal_gene_info$ensembl_id,
 save_fuma_gene_list(c(scz_signal_gene_info$ensembl_id,
                       scz_null_entrez_gene_info$ensembl_id),
                     "positional_esnps", "signals", "all", "scz", is_null = TRUE,
+                    is_matched = FALSE, null_type = "n_snps")
+
+# For EA:
+save_fuma_gene_list(c(ea_signal_gene_info$ensembl_id,
+                      ea_null_entrez_gene_info$ensembl_id),
+                    "positional_esnps", "signals", "all", "ea", is_null = TRUE,
                     is_matched = FALSE, null_type = "n_snps")

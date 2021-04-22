@@ -68,14 +68,30 @@ save_revigo_input("signals", "positional_esnps", "scz", gene_type = "all", "cc")
 save_revigo_input("signals", "positional_esnps", "scz", gene_type = "all",
                   go_type = "mf")
 
+# SCZ BP
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all", "bp")
+# SCZ CC
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all", "cc")
+# SCZ MF
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all",
+                  go_type = "mf")
 
-# SCZ BP and CC with 2 matched nulls
+
+# SCZ with 2 matched nulls
 save_revigo_input("signals", "positional_esnps", "scz", gene_type = "all", "bp",
                   is_matched = TRUE, n_matches = 2)
 save_revigo_input("signals", "positional_esnps", "scz", gene_type = "all", "cc",
                   is_matched = TRUE, n_matches = 2)
 save_revigo_input("signals", "positional_esnps", "scz", gene_type = "all", "mf",
                   is_matched = TRUE, n_matches = 2)
+
+# EA with 1 matched null
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all", "bp",
+                  is_matched = TRUE, n_matches = 1)
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all", "cc",
+                  is_matched = TRUE, n_matches = 1)
+save_revigo_input("signals", "positional_esnps", "ea", gene_type = "all", "mf",
+                  is_matched = TRUE, n_matches = 1)
 
 
 

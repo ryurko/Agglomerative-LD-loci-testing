@@ -130,8 +130,12 @@ save_signal_gene_lists("positional_esnps", "asd", 25, include_functional = FALSE
 # SCZ
 save_signal_gene_lists("positional_esnps", "scz", 25, include_functional = TRUE)
 save_signal_gene_lists("positional_esnps", "scz", 25, include_functional = FALSE)
+# EA
+save_signal_gene_lists("positional_esnps", "ea", 25, include_functional = TRUE)
+save_signal_gene_lists("positional_esnps", "ea", 25, include_functional = FALSE)
 
 # Positional
 save_signal_gene_lists("positional", "asd", 25, include_functional = FALSE)
 save_signal_gene_lists("positional", "scz", 25, include_functional = FALSE)
+save_signal_gene_lists("positional", "ea", 25, include_functional = FALSE)
 
