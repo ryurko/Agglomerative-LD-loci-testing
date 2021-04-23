@@ -1,5 +1,5 @@
 # PURPOSE: Create figure with comparison of AdaPT results to BH and intercept-
-#          only results for each of the three phenotypes using the r^2 = 0.50 data
+#          only results for each of the three phenotypes using the r^2 = 0.75 data
 
 library(tidyverse)
 library(cowplot)
@@ -7,10 +7,10 @@ library(cowplot)
 # Load AdaPT model data ---------------------------------------------------
 
 pos_esnps_model_data <-
-  read_csv("data/adapt_model_data/positional_esnps/rsquared50_model_data.csv")
+  read_csv("data/adapt_model_data/positional_esnps/rsquared75_model_data.csv")
 
 pos_model_data <-
-  read_csv("data/adapt_model_data/positional/rsquared50_model_data.csv")
+  read_csv("data/adapt_model_data/positional/rsquared75_model_data.csv")
 
 # Load the intercept-only AdaPT results -----------------------------------
 
@@ -25,24 +25,24 @@ read_int_only_results <- function(assign_type, phenotype, rsquared) {
 # Positional + eSNPs
 
 # ASD
-pos_esnps_asd_50_int_only <- read_int_only_results("positional_esnps", "asd", 50)
+pos_esnps_asd_75_int_only <- read_int_only_results("positional_esnps", "asd", 75)
 
 # SCZ
-pos_esnps_scz_50_int_only <- read_int_only_results("positional_esnps", "scz", 50)
+pos_esnps_scz_75_int_only <- read_int_only_results("positional_esnps", "scz", 75)
 
 # EA
-pos_esnps_ea_50_int_only <- read_int_only_results("positional_esnps", "ea", 50)
+pos_esnps_ea_75_int_only <- read_int_only_results("positional_esnps", "ea", 75)
 
 # Positional
 
 # ASD
-pos_asd_50_int_only <- read_int_only_results("positional", "asd", 50)
+pos_asd_75_int_only <- read_int_only_results("positional", "asd", 75)
 
 # SCZ
-pos_scz_50_int_only <- read_int_only_results("positional", "scz", 50)
+pos_scz_75_int_only <- read_int_only_results("positional", "scz", 75)
 
 # EA
-pos_ea_50_int_only <- read_int_only_results("positional", "ea", 50)
+pos_ea_75_int_only <- read_int_only_results("positional", "ea", 75)
 
 
 # Load the AdaPT CV results -----------------------------------------------
@@ -50,7 +50,7 @@ pos_ea_50_int_only <- read_int_only_results("positional", "ea", 50)
 # Make a function to do this quicker:
 read_xgb_cv_results <- function(assign_type, phenotype, rsquared) {
   readRDS(
-    paste0("data/adapt_results/asd/", assign_type, "/",
+    paste0("data/adapt_results/", assign_type, "/",
            phenotype, "_rsquared", rsquared, "_xgb_cv.rds")
   )
 }
@@ -58,24 +58,24 @@ read_xgb_cv_results <- function(assign_type, phenotype, rsquared) {
 # Positional + eSNPs
 
 # ASD
-pos_esnps_asd_50_xgb_cv <- read_xgb_cv_results("positional_esnps", "asd", 50)
+pos_esnps_asd_75_xgb_cv <- read_xgb_cv_results("positional_esnps", "asd", 75)
 
 # SCZ
-pos_esnps_scz_50_xgb_cv <- read_xgb_cv_results("positional_esnps", "scz", 50)
+pos_esnps_scz_75_xgb_cv <- read_xgb_cv_results("positional_esnps", "scz", 75)
 
 # EA
-pos_esnps_ea_50_xgb_cv <- read_xgb_cv_results("positional_esnps", "ea", 50)
+pos_esnps_ea_75_xgb_cv <- read_xgb_cv_results("positional_esnps", "ea", 75)
 
 # Positional
 
 # ASD
-pos_asd_50_xgb_cv <- read_xgb_cv_results("positional", "asd", 50)
+pos_asd_75_xgb_cv <- read_xgb_cv_results("positional", "asd", 75)
 
 # SCZ
-pos_scz_50_xgb_cv <- read_xgb_cv_results("positional", "scz", 50)
+pos_scz_75_xgb_cv <- read_xgb_cv_results("positional", "scz", 75)
 
 # EA
-pos_ea_50_xgb_cv <- read_xgb_cv_results("positional", "ea", 50)
+pos_ea_75_xgb_cv <- read_xgb_cv_results("positional", "ea", 75)
 
 
 # Create dot-plots comparing number of discoveries by each ----------------
@@ -105,12 +105,12 @@ adapt_dotplot <- bind_rows({
                                pval_type = "asd_vegas_pval"),
          `AdaPT: intercept-only` =
            return_adapt_n_disc(
-             list(pos_esnps_asd_50_int_only,
-                  pos_asd_50_int_only)),
+             list(pos_esnps_asd_75_int_only,
+                  pos_asd_75_int_only)),
          `AdaPT: XGBoost` =
            return_adapt_n_disc(
-             list(pos_esnps_asd_50_xgb_cv,
-                  pos_asd_50_xgb_cv))) %>%
+             list(pos_esnps_asd_75_xgb_cv,
+                  pos_asd_75_xgb_cv))) %>%
     pivot_longer(BH:`AdaPT: XGBoost`,
                  names_to = "method",
                  values_to = "n_disc") %>%
@@ -124,12 +124,12 @@ adapt_dotplot <- bind_rows({
                                pval_type = "scz_vegas_pval"),
          `AdaPT: intercept-only` =
            return_adapt_n_disc(
-             list(pos_esnps_scz_50_int_only,
-                  pos_scz_50_int_only)),
+             list(pos_esnps_scz_75_int_only,
+                  pos_scz_75_int_only)),
          `AdaPT: XGBoost` =
            return_adapt_n_disc(
-             list(pos_esnps_scz_50_xgb_cv,
-                  pos_scz_50_xgb_cv))) %>%
+             list(pos_esnps_scz_75_xgb_cv,
+                  pos_scz_75_xgb_cv))) %>%
     pivot_longer(BH:`AdaPT: XGBoost`,
                  names_to = "method",
                  values_to = "n_disc") %>%
@@ -144,12 +144,12 @@ adapt_dotplot <- bind_rows({
                                pval_type = "ea_vegas_pval"),
          `AdaPT: intercept-only` =
            return_adapt_n_disc(
-             list(pos_esnps_ea_50_int_only,
-                  pos_ea_50_int_only)),
+             list(pos_esnps_ea_75_int_only,
+                  pos_ea_75_int_only)),
          `AdaPT: XGBoost` =
            return_adapt_n_disc(
-             list(pos_esnps_ea_50_xgb_cv,
-                  pos_ea_50_xgb_cv))) %>%
+             list(pos_esnps_ea_75_xgb_cv,
+                  pos_ea_75_xgb_cv))) %>%
     pivot_longer(BH:`AdaPT: XGBoost`,
                  names_to = "method",
                  values_to = "n_disc") %>%
@@ -167,7 +167,7 @@ adapt_dotplot <- bind_rows({
   theme_bw() +
   ggthemes::scale_fill_colorblind() +
   ggthemes::scale_color_colorblind(guide = FALSE) +
-  labs(x = "SNP-gene assignment", y = "Number of detected LD loci",
+  labs(x = "SNP-gene assignment", y = "Number of detected genes/loci",
        fill = "Method") +
   coord_flip() +
   facet_wrap(~ phenotype, ncol = 3, scales = "free_x") +
@@ -184,8 +184,8 @@ adapt_dotplot <- bind_rows({
 
 # Save --------------------------------------------------------------------
 
-save_plot("figures/suppl/f_rsquared50_adapt_disc_dotplot.jpg",
+save_plot("figures/suppl/f_rsquared75_adapt_disc_plot.jpg",
           adapt_dotplot, ncol = 3, nrow = 2)
-save_plot("figures/suppl/f_rsquared50_adapt_disc_dotplot.pdf",
+save_plot("figures/suppl/f_rsquared75_adapt_disc_plot.pdf",
           adapt_dotplot, ncol = 3, nrow = 2)
 

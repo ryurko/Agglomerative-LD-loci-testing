@@ -7,10 +7,10 @@ library(cowplot)
 # Load AdaPT model data ---------------------------------------------------
 
 pos_esnps_model_data <-
-  read_csv("data/adapt_model_data/positional_esnps/rsquared25_model_data.csv")
+  read_csv("data/adapt_model_data/positional_esnps/rsquared25_2mil_model_data.csv")
 
 pos_model_data <-
-  read_csv("data/adapt_model_data/positional/rsquared25_model_data.csv")
+  read_csv("data/adapt_model_data/positional/rsquared25_2mil_model_data.csv")
 
 # Load the intercept-only AdaPT results -----------------------------------
 
@@ -186,10 +186,130 @@ adapt_dotplot <- bind_rows({
         plot.margin = margin(2, 2, 2, 2, "cm"))
 
 
-# Save --------------------------------------------------------------------
+# Next make the positional overlap charts ---------------------------------
 
-save_plot("figures/main/f2_adapt_disc_dotplot.jpg",
-          adapt_dotplot, ncol = 3, nrow = 2)
+# Load gene-tables
 
-save_plot("figures/main/f2_adapt_disc_dotplot.pdf",
-          adapt_dotplot, ncol = 3, nrow = 2)
+tidy_pos_esnps_gene_gs <-
+  read_csv("data/tidy_gene_ld_loci/positional_esnps/agglom_rsquared25_ld_loci.csv")
+
+tidy_pos_gene_gs <-
+  read_csv("data/tidy_gene_ld_loci/positional/agglom_rsquared25_ld_loci.csv")
+
+gene_type_table <-
+  read_csv("data/gencode/gencode_v21_table.csv")
+
+# Helper function to return genes and their types
+
+get_adapt_gene_info <- function(model_data, adapt_results, gene_gs_table,
+                                gene_table = gene_type_table, target_alpha = 0.05) {
+  adapt_gene_sets <- model_data[which(adapt_results$qvals <= target_alpha),] %>%
+    dplyr::select(ld_loci_id)
+  
+  gene_gs_table %>%
+    filter(ld_loci_id %in% adapt_gene_sets$ld_loci_id) %>%
+    dplyr::select(-ld_loci_id) %>%
+    distinct() %>%
+    inner_join(gene_table, by = "ensembl_id")
+}
+
+# Generate the info about genes for each set of results
+adapt_results_gene_info <- mutate(get_adapt_gene_info(pos_esnps_model_data,
+                                                      pos_esnps_asd_25_xgb_cv,
+                                                      tidy_pos_esnps_gene_gs),
+                                  phenotype = "ASD", assign_type = "Positional + eSNPs") %>%
+  bind_rows(mutate(get_adapt_gene_info(pos_esnps_model_data,
+                                       pos_esnps_scz_25_xgb_cv,
+                                       tidy_pos_esnps_gene_gs),
+                   phenotype = "SCZ", assign_type = "Positional + eSNPs"),
+            mutate(get_adapt_gene_info(pos_esnps_model_data,
+                                       pos_esnps_ea_25_xgb_cv,
+                                       tidy_pos_esnps_gene_gs),
+                   phenotype = "EA", assign_type = "Positional + eSNPs"),
+            mutate(get_adapt_gene_info(pos_model_data,
+                                       pos_asd_25_xgb_cv,
+                                       tidy_pos_gene_gs),
+                   phenotype = "ASD", assign_type = "Positional"),
+            mutate(get_adapt_gene_info(pos_model_data,
+                                       pos_scz_25_xgb_cv,
+                                       tidy_pos_gene_gs),
+                   phenotype = "SCZ", assign_type = "Positional"),
+            mutate(get_adapt_gene_info(pos_model_data,
+                                       pos_ea_25_xgb_cv,
+                                       tidy_pos_gene_gs),
+                   phenotype = "EA", assign_type = "Positional")) %>%
+  mutate(gene_biotype = fct_relevel(gene_biotype,
+                                    "protein_coding", "antisense",
+                                    "lnc_rna", "other"),
+         gene_biotype = fct_recode(gene_biotype,
+                                   `Protein coding` = "protein_coding",
+                                   `Antisense` = "antisense",
+                                   `lncRNA` = "lnc_rna",
+                                   `Other` = "other"),
+         phenotype = fct_relevel(phenotype, "ASD", "SCZ", "EA"),
+         gene_chr = factor(gene_chr, levels = as.character(1:22)))
+
+
+
+# Create the stack bar chart of overlap
+adapt_results_overlap_bars <- adapt_results_gene_info %>%
+  group_by(phenotype, ensembl_id) %>%
+  summarize(overlap_type = ifelse(n() == 2, "Overlap",
+                                  assign_type)) %>%
+  ungroup() %>%
+  group_by(phenotype, overlap_type) %>%
+  summarize(n_genes = n()) %>%
+  mutate(gene_prop = n_genes / sum(n_genes)) %>%
+  ungroup() %>%
+  mutate(overlap_type = fct_relevel(overlap_type,
+                                    "Positional", "Overlap", "Positional + eSNPs")) %>%
+  ggplot(aes(x = phenotype, y = gene_prop, fill = overlap_type)) +
+  geom_bar(stat = "identity", alpha = .8) +
+  geom_text(aes(label = paste0(n_genes, " genes", " (", round(gene_prop * 100, 2), "%)")),
+            position = position_stack(vjust = 0.5), color = "white",
+            size = 3) +
+  labs(x = "Phenotype", y = "Proportion of genes") +
+  scale_fill_manual(values = c("darkred", "darkorange", "darkblue")) +
+  #ggsci::scale_fill_npg() +
+  #ggthemes::scale_fill_colorblind() +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 14),
+        legend.title = element_blank(),
+        axis.title = element_text(size = 14),
+        axis.text.x = element_text(size = 12))
+
+# Make a modified version of the disc dot plot with two column and legend
+# in the fourth spot:
+
+adapt_dotplot_new <- adapt_dotplot +
+  ggthemes::scale_fill_colorblind(guide = guide_legend(reverse = TRUE)) +
+  facet_wrap(~ phenotype, ncol = 2, scales = "free_x") +
+  theme(legend.position = c(.8, .25),
+        legend.direction = "vertical",
+        legend.key = element_rect(size = 5),
+        legend.key.size = unit(3, 'lines'),
+        panel.spacing = unit(2, "lines"),
+        strip.text = element_text(size = 24),
+        axis.text = element_text(size = 16),
+        axis.title.x = element_text(size = 22),
+        axis.title.y = element_blank(),
+        legend.title = element_text(size = 22),
+        legend.text = element_text(size = 20),
+        plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm")) +
+  labs(y = "Number of detected genes/loci")
+
+# Combine with the overlap bars:
+dotplot_with_bars <-
+  plot_grid(adapt_dotplot_new, adapt_results_overlap_bars,
+            rel_widths = c(2, 1), #rel_heights = c(1.5, 1),
+            labels = c("A", "B"), hjust = -.2,
+            label_size = 24, label_fontface = "plain")
+# Try saving this
+save_plot("figures/main/f4_dotplot_bars.jpg",
+          dotplot_with_bars, ncol = 3, nrow = 2)
+save_plot("figures/main/f4_dotplot_bars.pdf",
+          dotplot_with_bars, ncol = 3, nrow = 2)
+
+
+
