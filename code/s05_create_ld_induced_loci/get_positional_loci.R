@@ -104,3 +104,39 @@ ld_loci_walk <-
              
            })
 
+# r^2 = 0.75 --------------------------------------------------------------
+
+ld_loci_walk <-
+  mclapply(1:22, mc.cores = 22,
+           function(chr_i) {
+             
+             # Get the genotype data for the chromosome
+             numeric_snp_ref_genotypes <- as.matrix(
+               data.table::fread(
+                 paste0("data/ld_reference/chr_level/chr", chr_i, "_ref_genotypes.csv")))
+             
+             # Get only this chr data:
+             tidy_chr_snp_data <- tidy_snp_data %>%
+               filter(gene_chr == chr_i) %>%
+               dplyr::select(-gene_chr)
+             
+             # Get the genotype data:
+             chr_genotype_data <-
+               numeric_snp_ref_genotypes[, unique(tidy_chr_snp_data$snp_id)]
+             chr_genotype_data <- flip_matrix(chr_genotype_data)
+             
+             # Form the LD induced loci
+             chr_ld_loci_results <- 
+               form_ld_induced_loci(tidy_chr_snp_data, chr_genotype_data,
+                                    window_size = 6,
+                                    # rho threshold of sqrt(.75)
+                                    rho_threshold = sqrt(.75))
+             # Save
+             saveRDS(chr_ld_loci_results,
+                     paste0("data/ld_induced_loci/rsquared75/positional/chr",
+                            chr_i, "_results.rds"))
+             
+             return(chr_i)
+             
+           })
+

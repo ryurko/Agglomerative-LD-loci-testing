@@ -196,3 +196,75 @@ print(length(which(ea_adapt_results$qvals <= 0.05)))
 saveRDS(ea_adapt_results,
         "data/adapt_results/positional_esnps/ea_rsquared50_xgb_cv.rds")
 
+# Next for r^2 = 0.75 ------------------------------------------------------
+
+model_data <-
+  read_csv("data/adapt_model_data/positional_esnps/rsquared75_model_data.csv")
+
+# Update the settings
+model_args <- list("nrounds400md1eta05gamma0" = list("nrounds" = 400,
+                                                     "max_depth" = 1,
+                                                     "eta" = 0.05,
+                                                     "gamma" = 0,
+                                                     "verbose" = 0,
+                                                     "nthread" = 5),
+                   "nrounds150md2eta06gamma0" = list("nrounds" = 150,
+                                                     "max_depth" = 2,
+                                                     "eta" = 0.06,
+                                                     "gamma" = 0,
+                                                     "verbose" = 0,
+                                                     "nthread" = 5))
+
+# ASD:
+asd_adapt_results <- adapt_xgboost_cv(as.matrix(
+  model_data[,asd_variables]),
+  model_data$asd_quad_pval,
+  verbose = list(print = FALSE,
+                 fit = FALSE,
+                 ms = FALSE),
+  piargs = model_args,
+  muargs = model_args,
+  s0 = rep(0.05, nrow(model_data)),
+  n_folds = 5,
+  niter_ms = 10,
+  nms = as.integer(2))
+print(length(which(asd_adapt_results$qvals <= 0.05)))
+
+saveRDS(asd_adapt_results,
+        "data/adapt_results/positional_esnps/asd_rsquared75_xgb_cv.rds")
+
+# SCZ:
+scz_adapt_results <- adapt_xgboost_cv(as.matrix(
+  model_data[,scz_variables]),
+  model_data$scz_quad_pval,
+  verbose = list(print = FALSE,
+                 fit = FALSE,
+                 ms = FALSE),
+  piargs = model_args,
+  muargs = model_args,
+  s0 = rep(0.05, nrow(model_data)),
+  n_folds = 5,
+  niter_ms = 10,
+  nms = as.integer(2))
+print(length(which(scz_adapt_results$qvals <= 0.05)))
+
+saveRDS(scz_adapt_results,
+        "data/adapt_results/positional_esnps/scz_rsquared75_xgb_cv.rds")
+
+# EA:
+ea_adapt_results <- adapt_xgboost_cv(as.matrix(
+  model_data[,ea_variables]),
+  model_data$ea_quad_pval,
+  verbose = list(print = FALSE,
+                 fit = FALSE,
+                 ms = FALSE),
+  piargs = model_args,
+  muargs = model_args,
+  s0 = rep(0.05, nrow(model_data)),
+  n_folds = 5,
+  niter_ms = 10,
+  nms = as.integer(2))
+print(length(which(ea_adapt_results$qvals <= 0.05)))
+
+saveRDS(ea_adapt_results,
+        "data/adapt_results/positional_esnps/ea_rsquared75_xgb_cv.rds")

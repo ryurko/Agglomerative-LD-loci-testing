@@ -40,8 +40,7 @@ create_rsquared_ld_loci_data <- function(rsquared, loci_type) {
 
 # Initialize datasets -----------------------------------------------------
 
-# Add .5 after finished on server
-rsquared_vals <- c(0.25, 0.5)
+rsquared_vals <- c(0.25, 0.5, 0.75)
 
 # Create list for Positional + eSNPs:
 pos_esnps_ld_loci_list <-

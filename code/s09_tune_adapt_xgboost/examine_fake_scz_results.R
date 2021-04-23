@@ -39,6 +39,22 @@ pos_esnp_50_tune_results %>%
 #   1 fake_scz  pos_esnps_rsquared50 adapt_xgboost           all        0.01    287     300         1  0.04     0
 #   2 fake_scz  pos_esnps_rsquared50 adapt_xgboost           all        0.01    282     150         2  0.06     0
 
+# r^2 = 0.75
+pos_esnp_75_tune_results <-
+  read_csv("data/adapt_results/positional_esnps/fake_scz_tune/rsquared75_tune_results.csv")
+
+# What are the best settings here for both levels of depth:
+pos_esnp_75_tune_results %>%
+  filter(alpha == 0.01) %>%
+  group_by(max_depth) %>%
+  arrange(desc(n_disc)) %>%
+  slice(1)
+# A tibble: 2 x 10
+#     Groups:   max_depth [2]
+#     phenotype gene_set_type        method        variables alpha n_disc nrounds max_depth   eta gamma
+#     <chr>     <chr>                <chr>         <chr>     <dbl>  <dbl>   <dbl>     <dbl> <dbl> <dbl>
+#   1 fake_scz  pos_esnps_rsquared75 adapt_xgboost all        0.01    255     400         1  0.05     0
+#   2 fake_scz  pos_esnps_rsquared75 adapt_xgboost all        0.01    337     150         2  0.06     0
 
 
 # Positional --------------------------------------------------------------
@@ -78,3 +94,14 @@ pos_50_tune_results %>%
 #   1 fake_scz  pos_rsquared50 adapt_xgboost           all        0.01    221     100         1  0.02     0
 #   2 fake_scz  pos_rsquared50 adapt_xgboost           all        0.01    303     100         2  0.02     0
 
+# r^2 = 0.75
+pos_75_tune_results <-
+  read_csv("data/adapt_results/positional/fake_scz_tune/rsquared75_tune_results.csv")
+
+# What are the best settings here for both levels of depth:
+pos_75_tune_results %>%
+  filter(alpha == 0.01) %>%
+  group_by(max_depth) %>%
+  arrange(desc(n_disc)) %>%
+  slice(1)
+# Did not return any discoveries so will use same settings as r^2 = 0.50

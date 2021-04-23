@@ -72,17 +72,23 @@ save_adapt_snps_gene_tables <-
 # Positional + eSNPs
 save_adapt_snps_gene_tables("positional_esnps", "asd", 25)
 save_adapt_snps_gene_tables("positional_esnps", "asd", 50)
+save_adapt_snps_gene_tables("positional_esnps", "asd", 75)
 save_adapt_snps_gene_tables("positional_esnps", "scz", 25)
 save_adapt_snps_gene_tables("positional_esnps", "scz", 50)
+save_adapt_snps_gene_tables("positional_esnps", "scz", 75)
 save_adapt_snps_gene_tables("positional_esnps", "ea", 25)
 save_adapt_snps_gene_tables("positional_esnps", "ea", 50)
+save_adapt_snps_gene_tables("positional_esnps", "ea", 75)
 
 # Positional
 save_adapt_snps_gene_tables("positional", "asd", 25)
 save_adapt_snps_gene_tables("positional", "asd", 50)
+save_adapt_snps_gene_tables("positional", "asd", 75)
 save_adapt_snps_gene_tables("positional", "scz", 25)
 save_adapt_snps_gene_tables("positional", "scz", 50)
+save_adapt_snps_gene_tables("positional", "scz", 75)
 save_adapt_snps_gene_tables("positional", "ea", 25)
 save_adapt_snps_gene_tables("positional", "ea", 50)
+save_adapt_snps_gene_tables("positional", "ea", 75)
 
 

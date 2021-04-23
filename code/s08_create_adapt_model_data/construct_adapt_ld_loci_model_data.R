@@ -5,9 +5,11 @@ library(data.table)
 
 # Load the LD loci p-value results ---------------------------------------
 
+rsquared_thresholds <- c(.25, .50, .75)
+
 # Positional + eSNPs
 pos_esnps_ld_loci_pval_list <-
-  map(c(.25, .50),
+  map(rsquared_thresholds,
       function(rsquared_cut) {
         map_dfr(list.files(
           paste0(
@@ -19,7 +21,7 @@ pos_esnps_ld_loci_pval_list <-
 
 # Positional
 pos_ld_loci_pval_list <-
-  map(c(.25, .50),
+  map(rsquared_thresholds,
       function(rsquared_cut) {
         map_dfr(list.files(
           paste0(
@@ -33,7 +35,7 @@ pos_ld_loci_pval_list <-
 
 # Positional + eSNPs
 pos_esnp_gene_ld_loci_list <-
-  map(c(.25, .50),
+  map(rsquared_thresholds,
       function(rsquared_cut) {
         read_csv(
           paste0(
@@ -43,7 +45,7 @@ pos_esnp_gene_ld_loci_list <-
 
 # Positional
 pos_gene_ld_loci_list <-
-  map(c(.25, .50),
+  map(rsquared_thresholds,
       function(rsquared_cut) {
         read_csv(
           paste0(
@@ -424,7 +426,7 @@ walk(1:length(pos_esnps_model_data_list),
        write_csv(pos_esnps_model_data_list[[rsquared_i]],
                  paste0(
                    "data/adapt_model_data/positional_esnps/rsquared",
-                   c(0.25, 0.5)[rsquared_i] * 100, "_model_data.csv"
+                   rsquared_thresholds[rsquared_i] * 100, "_model_data.csv"
                  ))
      })
 
@@ -433,7 +435,7 @@ walk(1:length(pos_model_data_list),
        write_csv(pos_model_data_list[[rsquared_i]],
                  paste0(
                    "data/adapt_model_data/positional/rsquared",
-                   c(0.25, 0.5)[rsquared_i] * 100, "_model_data.csv"
+                   rsquared_thresholds[rsquared_i] * 100, "_model_data.csv"
                  ))
      })
 
