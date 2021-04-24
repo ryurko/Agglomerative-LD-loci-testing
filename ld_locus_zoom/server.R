@@ -10,8 +10,9 @@
 # library(shinyalert, lib.loc = "/home/ryurko/Rpackages")
 # options(shiny.maxRequestSize = 30*1024^2)
 # library(dplyr, lib.loc = "/home/ryurko/Rpackages")
-# #library(magrittr, lib.loc = "/home/ryurko/Rpackages")
+# library(magrittr, lib.loc = "/home/ryurko/Rpackages")
 # library(readr, lib.loc = "/home/ryurko/Rpackages")
+# library(purrr, lib.loc = "/home/ryurko/Rpackages")
 # library(stringr, lib.loc = "/home/ryurko/Rpackages")
 # library(data.table, lib.loc = "/home/ryurko/Rpackages")
 # library(ggplot2, lib.loc = "/home/ryurko/Rpackages")
@@ -22,12 +23,8 @@ library(shiny)
 library(shinyjs)
 library(shinyalert)
 options(shiny.maxRequestSize = 30*1024^2)
-library(dplyr)
-library(magrittr)
-library(readr)
-library(stringr)
+library(tidyverse)
 library(data.table)
-library(ggplot2)
 library(DT)
 library(plotly)
 library(janitor)
@@ -51,7 +48,7 @@ shinyServer(function(input, output) {
         paste0("data/",
                janitor::make_clean_names(str_remove(tolower(input$assign_type), "-")))
     })
-
+    
     # Load the gene info:
     gene_info_table <- reactive({
         req(data_file_path())
@@ -106,7 +103,7 @@ shinyServer(function(input, output) {
                     pull(ld_loci_id)  %>%
                     unique()
             selectizeInput(inputId = "ld_loci",
-                           label = "Select LD loci ID:",
+                           label = "Select LD locus ID:",
                            choices = c("choose" = "", candidate_ld_loci_ids),
                            selected = candidate_ld_loci_ids[1])
         })
@@ -610,7 +607,7 @@ shinyServer(function(input, output) {
             }
 
             selectizeInput(inputId = "custom_loci",
-                           label = "Select loci ID:",
+                           label = "Select locus ID:",
                            choices = loci_options,
                            selected = loci_options[1])
 

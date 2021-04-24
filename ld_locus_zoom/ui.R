@@ -23,7 +23,7 @@ library(shinyjs)
 library(shinyalert)
 library(markdown)
 library(DT)
-library(dplyr)
+library(tidyverse)
 library(plotly)
 
 
@@ -31,7 +31,7 @@ library(plotly)
 shinyUI(fluidPage(
 
     # Navbarpage structure for UI with cosmo theme
-    navbarPage("LD loci zoom", theme = shinytheme("cosmo"),
+    navbarPage("LD locus zoom", theme = shinytheme("cosmo"),
 
                # Now display the tab for the ASD results (our paper's results)
                tabPanel("ASD results", fluid = TRUE, icon = icon("chart-area"),
@@ -58,7 +58,7 @@ shinyUI(fluidPage(
                                 # Display smoothing at gene or LD loci level?
                                 checkboxGroupInput("smooth_level",
                                                    label = "Level of smoothing displayed:",
-                                                   choices = list("LD loci (black)" = "ld_loci",
+                                                   choices = list("LD locus (black)" = "ld_loci",
                                                                   "Gene (colored by gene)" = "gene"),
                                                    selected = "ld_loci", inline = TRUE),
 
@@ -95,7 +95,7 @@ shinyUI(fluidPage(
                             # Sidebar panel for inputs ----
                             sidebarPanel(
 
-                                fileInput("custom_genes", "(Required) Upload table of gene-loci pairs",
+                                fileInput("custom_genes", "(Required) Upload table of gene-locus pairs",
                                           accept = c("text/csv",
                                                      "text/comma-separated-values,
                                                             text/plain", ".csv")),
@@ -123,7 +123,7 @@ shinyUI(fluidPage(
                                 # Display smoothing at gene or LD loci level?
                                 checkboxGroupInput("custom_smooth_level",
                                                    label = "Level of smoothing displayed:",
-                                                   choices = list("Loci (black)" = "ld_loci",
+                                                   choices = list("Locus (black)" = "ld_loci",
                                                                   "Gene (colored by gene)" = "gene"),
                                                    selected = "ld_loci", inline = TRUE),
 
@@ -158,7 +158,7 @@ shinyUI(fluidPage(
                                             tabPanel("Smoothing settings",
                                                      h4(p("You can change three settings for the displayed kernel smoothing interpolation:")),
                                                      numericInput("min_n_snps", "Minimum number of SNPs required for kernel smoothing:", 3, min = 3),
-                                                     numericInput("loci_interp", "Minimum number of interpolation points for displayed loci-level smoothing:", 1000, min = 100),
+                                                     numericInput("loci_interp", "Minimum number of interpolation points for displayed locus-level smoothing:", 1000, min = 100),
                                                      numericInput("gene_interp", "Minimum number of interpolation points for displayed gene-level smoothing:", 100, min = 25)
                                                      ))
                             )

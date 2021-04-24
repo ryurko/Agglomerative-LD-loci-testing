@@ -5,16 +5,16 @@ library(cowplot)
 
 # Source helper functions -------------------------------------------------
 
-source("ld_locus_zoom_app/kernel_smoothing_fns.R")
-source("ld_locus_zoom_app/get_gene_chart_tiers.R")
-source("ld_locus_zoom_app/get_zoom_x_axis_limits.R")
+source("ld_locus_zoom/kernel_smoothing_fns.R")
+source("ld_locus_zoom/get_gene_chart_tiers.R")
+source("ld_locus_zoom/get_zoom_x_axis_limits.R")
 
 color_function <- colorRampPalette(c("#440154FF", "darkblue", "#00846b", "darkorange"))
 
 # Load the shiny app data -------------------------------------------------
 
 # File path:
-data_file_path <- "ld_locus_zoom_app/data/positional_esnps"
+data_file_path <- "ld_locus_zoom/data/positional_esnps"
 
 # Load the gene info:
 gene_info_table <- read_csv(paste0(data_file_path, "/gene_info.csv")) %>%
