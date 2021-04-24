@@ -1,16 +1,14 @@
 # Overview of manuscript repository
 
-This repository contains the code for reproducing the results and figures in _An agglomerative approach for LD loci testing with metadata and interactive localization_.
+This repository contains the code for reproducing the results and figures in _An approach to gene-based testing accounting for dependence of tests among nearby genes_.
 
 The folders are organized in the following manner:
 
 - [code](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/code) - all scripts for initializing datasets, generating results and figures in manuscript
 
-- [figures](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/figures) - files for final figures displayed in the manuscript (including supplementary materials)
-
 - [data](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/data) - folder containing files necessary for the analysis (_NOTE: public GitHub repository version of folder only contains README file explaining the organization and datasets of final results_)
 
-- [ld_loci_zoom_app](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/ld_loci_zoom_app) - LD loci zoom Shiny application folder, containing the necessary app files, scripts, and datasets
+- [ld_loci_zoom_app](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/ld_locus_zoom) - LD loci zoom Shiny application folder, containing the necessary app files, scripts, and datasets
 
 Due to their respective terms and conditions, we are unable to publicly post the initial datasets used in the analysis. However, all datasets considered in the manuscript are publicly available in the following locations:
 
