@@ -4,30 +4,13 @@
 #          the key difference being the need to generate the kernel smoothing
 #          results for the user uploaded files.
 
-# library(shiny, lib.loc = "/home/ryurko/Rpackages")
-# library(rlang, lib.loc = "/home/ryurko/Rpackages")
-# library(shinyjs, lib.loc = "/home/ryurko/Rpackages")
-# library(shinyalert, lib.loc = "/home/ryurko/Rpackages")
-# options(shiny.maxRequestSize = 30*1024^2)
-# library(dplyr, lib.loc = "/home/ryurko/Rpackages")
-# library(magrittr, lib.loc = "/home/ryurko/Rpackages")
-# library(readr, lib.loc = "/home/ryurko/Rpackages")
-# library(purrr, lib.loc = "/home/ryurko/Rpackages")
-# library(stringr, lib.loc = "/home/ryurko/Rpackages")
-# library(data.table, lib.loc = "/home/ryurko/Rpackages")
-# library(ggplot2, lib.loc = "/home/ryurko/Rpackages")
-# library(DT, lib.loc = "/home/ryurko/Rpackages")
-# library(plotly, lib.loc = "/home/ryurko/Rpackages")
-# library(janitor, lib.loc = "/home/ryurko/Rpackages")
 library(shiny)
 library(shinyjs)
 library(shinyalert)
 options(shiny.maxRequestSize = 30*1024^2)
 library(tidyverse)
 library(data.table)
-library(DT)
 library(plotly)
-library(janitor)
 
 # TODO: Source the helper functions for simplifying the steps in this code
 source("kernel_smoothing_fns.R")
@@ -48,7 +31,7 @@ shinyServer(function(input, output) {
         paste0("data/",
                janitor::make_clean_names(str_remove(tolower(input$assign_type), "-")))
     })
-    
+
     # Load the gene info:
     gene_info_table <- reactive({
         req(data_file_path())
@@ -77,7 +60,7 @@ shinyServer(function(input, output) {
     # Functional SNPs ----
     all_functional_snps_data <- reactive({
         if (input$assign_type == "Positional") {
-            tibble(ld_loci_id = NULL)
+            tibble(ld_locus_id = NULL)
         } else {
             read_csv(paste0(data_file_path(), "/functional_snp_gene_ld_loci_data.csv")) %>%
                 mutate(Gene = paste0(gene_name, " (", ensembl_id, ")"))
@@ -98,21 +81,21 @@ shinyServer(function(input, output) {
     output$ld_loci_selection <-
         renderUI({
             req(all_ld_loci_level_data(), input$chr)
-            candidate_ld_loci_ids <- all_ld_loci_level_data() %>%
+            candidate_ld_locus_ids <- all_ld_loci_level_data() %>%
                     filter(chr == input$chr) %>%
-                    pull(ld_loci_id)  %>%
+                    pull(ld_locus_id)  %>%
                     unique()
             selectizeInput(inputId = "ld_loci",
                            label = "Select LD locus ID:",
-                           choices = c("choose" = "", candidate_ld_loci_ids),
-                           selected = candidate_ld_loci_ids[1])
+                           choices = c("choose" = "", candidate_ld_locus_ids),
+                           selected = candidate_ld_locus_ids[1])
         })
 
     # Filter the respective LD loci, gene, and functional datasets:
     ld_loci_level_smooth_data <- reactive({
         req(input$ld_loci, all_ld_loci_level_data())
         all_ld_loci_level_data() %>%
-            filter(ld_loci_id == input$ld_loci) %>%
+            filter(ld_locus_id == input$ld_loci) %>%
             dplyr::rename(`Smooth SCZ z-squared` = smooth_scz_background,
                           `Smooth EA z-squared` = smooth_ea_background,
                           `Smooth ASD z-squared` = smooth_asd_zsquared,
@@ -122,7 +105,7 @@ shinyServer(function(input, output) {
     gene_level_smooth_data <- reactive({
         req(input$ld_loci, all_gene_level_data())
         all_gene_level_data() %>%
-            filter(ld_loci_id == input$ld_loci) %>%
+            filter(ld_locus_id == input$ld_loci) %>%
             dplyr::rename(`Smooth ASD z-squared` = smooth_asd_zsquared,
                           BP = bp)
     })
@@ -133,7 +116,7 @@ shinyServer(function(input, output) {
             all_functional_snps_data()
         } else {
             all_functional_snps_data() %>%
-                filter(ld_loci_id == input$ld_loci) %>%
+                filter(ld_locus_id == input$ld_loci) %>%
                 dplyr::rename(BP = bp, `ASD z-squared` = asd_z_squared)
         }
     })
@@ -142,7 +125,7 @@ shinyServer(function(input, output) {
     snp_gene_pairs <- reactive({
         req(input$ld_loci, data_file_path())
         read_csv(paste0(data_file_path(), "/snp_gene_table.csv")) %>%
-            filter(ld_loci_id == input$ld_loci)
+            filter(ld_locus_id == input$ld_loci)
     })
 
 
@@ -151,8 +134,8 @@ shinyServer(function(input, output) {
         req(gene_info_table(), input$ld_loci)
 
         gene_loc_table <- gene_info_table() %>%
-            filter(ld_loci_id == input$ld_loci) %>%
-            dplyr::select(ensembl_id, ld_loci_id, start, end, strand,
+            filter(ld_locus_id == input$ld_loci) %>%
+            dplyr::select(ensembl_id, ld_locus_id, start, end, strand,
                           gene_name, Gene)
 
         gene_loc_table %>%
@@ -196,20 +179,29 @@ shinyServer(function(input, output) {
     # Determine the plot axes:
     plot_axes <- reactive({
         req(gene_loc_table_display(), ld_loci_level_smooth_data())
-        get_zoom_x_axis_limits(ld_loci_level_smooth_data()$BP,
-                               gene_loc_table_display()$start,
-                               gene_loc_table_display()$end)
+
+        if (input$display_esnps) {
+            get_zoom_x_axis_limits(unique(c(ld_loci_level_smooth_data()$BP,
+                                            functional_snps_data()$BP)),
+                                   gene_loc_table_display()$start,
+                                   gene_loc_table_display()$end)
+        } else {
+            get_zoom_x_axis_limits(ld_loci_level_smooth_data()$BP,
+                                   gene_loc_table_display()$start,
+                                   gene_loc_table_display()$end)
+        }
+
     })
 
     output$gene_table <- DT::renderDataTable(server = FALSE, {
         req(gene_loc_table_display(), input$ld_loci)
         gene_loc_table_display() %>%
-            dplyr::select(ensembl_id, gene_name, start, end, strand, ld_loci_id) %>%
+            dplyr::select(ensembl_id, gene_name, start, end, strand, ld_locus_id) %>%
             mutate(gwas_catalog = paste0("https://www.ebi.ac.uk/gwas/genes/",
                                          gene_name),
                    gwas_catalog = paste0("<a href='", gwas_catalog, "'>",
                                          gwas_catalog, "</a>")) %>%
-            dplyr::select(-ld_loci_id) %>%
+            dplyr::select(-ld_locus_id) %>%
             DT::datatable(escape = FALSE,
                           extensions = c("Buttons"),
                           options = list(
@@ -233,7 +225,7 @@ shinyServer(function(input, output) {
         snp_gene_pairs() %>%
             mutate(gwas_catalog = paste0("<a href='", gwas_catalog, "'>",
                                          gwas_catalog, "</a>")) %>%
-            dplyr::select(-ld_loci_id) %>%
+            dplyr::select(-ld_locus_id) %>%
             DT::datatable(escape = FALSE,
                           extensions = c("Buttons", "KeyTable", "FixedColumns"),
                           options = list(
@@ -298,7 +290,8 @@ shinyServer(function(input, output) {
 
             base_snp_plot <- base_snp_plot +
                 geom_line(data = ld_loci_level_smooth_data(),
-                          aes(y = `Smooth SCZ z-squared`),
+                          aes(y = `Smooth SCZ z-squared`,
+                              group = intra_locus_cluster),
                           color = "darkred", alpha = 0.8)
         }
 
@@ -306,14 +299,16 @@ shinyServer(function(input, output) {
 
             base_snp_plot <- base_snp_plot +
                 geom_line(data = ld_loci_level_smooth_data(),
-                          aes(y = `Smooth EA z-squared`),
+                          aes(y = `Smooth EA z-squared`,
+                              group = intra_locus_cluster),
                           color = "lightblue", alpha = 0.8)
         }
 
         # Now display the null results:
         base_snp_plot <- base_snp_plot +
             geom_line(data = ld_loci_level_smooth_data(),
-                      aes(y = `Null 95th percentile`), alpha = .8,
+                      aes(y = `Null 95th percentile`,
+                          group = intra_locus_cluster), alpha = .8,
                       color = "gray", linetype = "dotted",
                       size = 1)
 
@@ -321,7 +316,8 @@ shinyServer(function(input, output) {
         if ("ld_loci" %in% input$smooth_level) {
             base_snp_plot <- base_snp_plot +
                 geom_line(data = ld_loci_level_smooth_data(),
-                          aes(y = `Smooth ASD z-squared`), alpha = .8,
+                          aes(y = `Smooth ASD z-squared`,
+                              group = intra_locus_cluster), alpha = .8,
                           color = "black", size = 1)
         }
 
@@ -607,7 +603,7 @@ shinyServer(function(input, output) {
             }
 
             selectizeInput(inputId = "custom_loci",
-                           label = "Select locus ID:",
+                           label = "Select loci ID:",
                            choices = loci_options,
                            selected = loci_options[1])
 

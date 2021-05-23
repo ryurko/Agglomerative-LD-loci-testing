@@ -2,6 +2,7 @@
 #          the LD r^2 threshold
 
 library(tidyverse)
+library(cowplot)
 
 # Load the tidy gene to merged set tables  --------------------------------
 
@@ -17,25 +18,25 @@ table_types <- expand.grid("rsquared" = c(0.25, 0.5, 0.75),
 gene_merge_counts <-
   map_dfr(1:nrow(table_types),
           function(i) {
-            
+
             # Load the type of results:
             result_data <-
-              read_csv(paste0("data/tidy_gene_ld_loci/",
+              read_csv(paste0("data/tidy_gene_locus/",
                               table_types$assignment[i],
                               "/agglom_rsquared",
                               table_types$rsquared[i] * 100,
                               "_ld_loci.csv"))
-            
+
             # Return a table with the number of merged gene sets along with the
             # original number (distinct will just remove duplicates later)
             table_types[i,] %>%
-              mutate(n_loci = length(unique(result_data$ld_loci_id))) %>%
+              mutate(n_loci = length(unique(result_data$ld_locus_id))) %>%
               bind_rows(
                 tibble("rsquared" = 1, "assignment" = table_types$assignment[i],
                        "n_loci" = nrow(result_data))
               ) %>%
               return
-            
+
           }) %>%
   distinct()
 
@@ -55,7 +56,7 @@ gene_merge_plot <- gene_merge_counts %>%
                      breaks = c(0, 0.25, 0.5, 0.75, 1),
                      labels = c("0", "0.25", "0.50", "0.75",
                                 "1\n(w/o merging)")) +
-  scale_y_continuous(limits = c(20000, max(gene_merge_counts$n_loci + 100))) +
+  scale_y_continuous(limits = c(25000, max(gene_merge_counts$n_loci + 100))) +
   theme_bw() +
   labs(x = TeX('LD $r^2$ threshold'),
        y = "Number of genes/loci",
@@ -66,11 +67,7 @@ gene_merge_plot <- gene_merge_counts %>%
         axis.title = element_text(size = 12),
         axis.text = element_text(size = 10))
 
-save_plot("figures/main/f2_gene_merge.jpg",
+save_plot("figures/main/f_gene_merge.jpg",
           gene_merge_plot, ncol = 1, nrow = 1, base_asp = 1.2)
-save_plot("figures/main/f2_gene_merge.pdf",
+save_plot("figures/main/f_gene_merge.pdf",
           gene_merge_plot, ncol = 1, nrow = 1, base_asp = 1.2)
-
-
-
-

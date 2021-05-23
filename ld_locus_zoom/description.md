@@ -27,7 +27,7 @@ There are two sets of ASD results to choose from based on the SNP-to-gene assign
 
 2. _Positional + eSNPs_: $S_g = S_g^{pos} \cup S_g^{eQTL}$, where $S_g^{eQTL}$ are the set of eSNPs associated with gene $g$.
 
-The _Positional + eSNPs_ results are the default selection. Then you choose to examine an LD locus associated with ASD by first picking the chromosome (CHR), and then an LD locus ID located in the selected CHR. (_Note: LD locus IDs have no meaning beyond ensuring unique identifiers for the LD loci within each CHR_.) 
+The _Positional + eSNPs_ results are the default selection. Then you choose to examine an LD locus associated with ASD by first picking the chromosome (CHR), and then an LD locus ID located in the selected CHR. (_Note: LD locus IDs have no meaning beyond ensuring unique identifiers for the LD locus within each CHR_.) 
 
 ### Kernel smoothing localization
 
@@ -37,7 +37,7 @@ $$
 \hat{z}_{m^*}^2(BP) = \sum_{i \in S_{m^*}^{Pos}} z_i^2 \frac{K_h(BP_i, BP)}{\sum_{j \in S_{m^*}^{Pos}} K_h(BP_j, BP)},
 $$
 
-where $K_h$ is a one-dimensional Gaussian kernel with bandwidth $h$ selected separately for each LD loci using generalized cross-validation (as implemented in the [`np` package](https://github.com/JeffreyRacine/R-Package-np)). The default option is to display the smooth signal on the y-axis with interpolation between the positional SNPs at the LD locus level (denoted by the black line). The LD locus' SNPs are represented by the rugs along the x-axis. For reference, the gray dotted line denotes a point-wise $95^{th}$ percentile of 1,000 simulations for squared null Gaussian random variables, $z_{m^*}^2$ where $z_{m^*} \sim \text{Normal}(\boldsymbol{0}_{m^*}, \boldsymbol{\Sigma}_{m^*})$, given the LD structure $\boldsymbol{\Sigma}_{m^*}$ of the selected LD locus $m^*$. 
+where $K_h$ is a one-dimensional Gaussian kernel with bandwidth $h$ selected separately for each LD locus using generalized cross-validation (as implemented in the [`np` package](https://github.com/JeffreyRacine/R-Package-np)). The default option is to display the smooth signal on the y-axis with interpolation between the positional SNPs at the LD locus level (denoted by the black line). The LD locus' SNPs are represented by the rugs along the x-axis. For reference, the gray dotted line denotes a point-wise $95^{th}$ percentile of 1,000 simulations for squared null Gaussian random variables, $z_{m^*}^2$ where $z_{m^*} \sim \text{Normal}(\boldsymbol{0}_{m^*}, \boldsymbol{\Sigma}_{m^*})$, given the LD structure $\boldsymbol{\Sigma}_{m^*}$ of the selected LD locus $m^*$. 
 
 Additionally, all of the genes in the selected LD locus are displayed below the x-axis with rectangles denoting their start and end positions, with different colors for each gene. (_Note: gene arrangement has no meaning beyond ensuring no overlap between each gene's start and end positions._) You can choose to display the gene-level smooth signal (lines colored by gene) which uses the Nadaraya-Watson estimator above, but apply separately for each gene.
 
@@ -53,11 +53,11 @@ The visualization is built with the [plotly](https://plotly.com/r/) library enab
 
 ## Export gene and SNP tables <a name="gene-snps"></a>
 
-You can view and export tables of the genes and SNP-gene pairs in the selected LD loci via the __Genes__ and __SNPs__ tabs respectively. Both tabs include download buttons above the tables enabling the option to export all of the genes or SNP-gene pairs in either csv or Excel format. __All genomic positions in the visualization and tables (gene's start and end, SNPs' BP) are based on genome assembly version GRCh38__.
+You can view and export tables of the genes and SNP-gene pairs in the selected LD locus via the __Genes__ and __SNPs__ tabs respectively. Both tabs include download buttons above the tables enabling the option to export all of the genes or SNP-gene pairs in either csv or Excel format. __All genomic positions in the visualization and tables (gene's start and end, SNPs' BP) are based on genome assembly version GRCh38__.
 
 The genes table includes columns for Ensembl ID, gene name, [GENCODE v21](https://www.gencodegenes.org/human/release_21.html) start and end positions, strand  (+ or -) indicating direction, as well as a link to the gene's [GWAS catalog](https://www.ebi.ac.uk/gwas/home) page. _Note: the GWAS catalog link is constructed using the gene's name and does not guarantee that the gene is in the GWAS catalog._
 
-The SNP-gene table includes a row for every SNP-gene pair in the selected LD loci, meaning that if a SNP is assigned to multiple genes then it will have a row for each gene. The SNP-gene table includes columns for:
+The SNP-gene table includes a row for every SNP-gene pair in the selected LD locus, meaning that if a SNP is assigned to multiple genes then it will have a row for each gene. The SNP-gene table includes columns for:
 
 * SNP's BP, alleles, rs ID, and GWAS summary statistics for ASD, SCZ, and EA
 * Ensembl ID for the gene it is assigned to and how: `is_positional = 1` if it is positionally assigned, `is_esnp = 1` if it is an associated eSNP (SNPs can be both be positional and eSNPs for a gene)
@@ -70,7 +70,7 @@ localized signal in a similar manner to visualization in the _ASD results_ tab. 
 are two required datasets (__in CSV format__) for you to upload in order for the visualization to be
 displayed:
 
-+ __Gene-locus table__ - each row corresponds to unique gene-loci pair with five required columns (_and value types_):
++ __Gene-locus table__ - each row corresponds to unique gene-locus pair with five required columns (_and value types_):
 
   1. `gene_id` - unique gene ID, e.g., Ensembl ID (_character or numeric_)
   
@@ -95,7 +95,7 @@ displayed:
   4. `snp_signal` - SNP's signal to apply smoothing over, e.g., $-\log_{10}$($p$-value) or squared $z$ statistics (_numeric_)
   
   
-Using these two provided tables, the loci IDs from the gene-locus table are joined to the SNP-gene table and then the kernel smoothing localization from above is applied to user' `snp_signal` column. As before for the ASD results, the bandwidth is selected separately for each locus using generalized cross-validation. _Note: This process may take a few minutes to generate the smoothing results for all provided loci depending on the size of the uploaded datasets, but once complete you can switch between the displays for loci without delay._ As before with the _ASD results_ tab, the localized signal will be displayed in the _Visualization_ tab, with options to export tables of genes and SNPs using the _Genes_ and _SNPs_ tabs respectively. _Note: Any additional columns provided in the gene-locus and SNP-gene tables will be included in the exported tables_.
+Using these two provided tables, the locus IDs from the gene-locus table are joined to the SNP-gene table and then the kernel smoothing localization from above is applied to user' `snp_signal` column. As before for the ASD results, the bandwidth is selected separately for each locus using generalized cross-validation. _Note: This process may take a few minutes to generate the smoothing results for all provided loci depending on the size of the uploaded datasets, but once complete you can switch between the displays for loci without delay._ As before with the _ASD results_ tab, the localized signal will be displayed in the _Visualization_ tab, with options to export tables of genes and SNPs using the _Genes_ and _SNPs_ tabs respectively. _Note: Any additional columns provided in the gene-locus and SNP-gene tables will be included in the exported tables_.
 
 ### Display functional SNPs and reference signals
 
@@ -121,7 +121,7 @@ Additionally, you can optionally upload two additional datasets (__in CSV format
   3. `reference_signal` - reference signal value to display in comparison to the kernel smoothing signals (_numeric_)
 
 
-The functional SNP-gene pairs can then be optionally displayed in the same manner as the associated eSNPs in the _ASD results_ tab, with vertical bars denoting the functional SNP's signal (colors matching their associated genes). The reference signal can then be optionally displayed as dashed, grey reference line in the background of the smoothing signal display, similarly to the pointwise null reference line in the _ASD results_ tab. ([Click here for example code demonstrating how to generate pointwise null values.](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/main/code/s11_prep_app_data/generate_asd_kernel_smoothing_results.R)).
+The functional SNP-gene pairs can then be optionally displayed in the same manner as the associated eSNPs in the _ASD results_ tab, with vertical bars denoting the functional SNP's signal (colors matching their associated genes). The reference signal can then be optionally displayed as dashed, grey reference line in the background of the smoothing signal display, similarly to the pointwise null reference line in the _ASD results_ tab. ([Click here for example code demonstrating how to generate pointwise null values.](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/main/code/s07_prep_app_smoothing/generate_asd_kernel_smoothing_results.R)).
 
 ### Change kernel smoothing interpolation 
 

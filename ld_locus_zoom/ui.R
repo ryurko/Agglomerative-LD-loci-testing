@@ -4,17 +4,6 @@
 #          be a separate page for the documentation of the app, providing info
 #          with how to use the application.
 
-# library(shiny, lib.loc = "/home/ryurko/Rpackages")
-# library(rlang, lib.loc = "/home/ryurko/Rpackages")
-# library(shinycssloaders, lib.loc = "/home/ryurko/Rpackages")
-# library(shinycustomloader, lib.loc = "/home/ryurko/Rpackages")
-# library(shinythemes, lib.loc = "/home/ryurko/Rpackages")
-# library(shinyjs, lib.loc = "/home/ryurko/Rpackages")
-# library(shinyalert, lib.loc = "/home/ryurko/Rpackages")
-# library(markdown, lib.loc = "/home/ryurko/Rpackages")
-# library(DT, lib.loc = "/home/ryurko/Rpackages")
-# library(dplyr, lib.loc = "/home/ryurko/Rpackages")
-# library(plotly, lib.loc = "/home/ryurko/Rpackages")
 library(shiny)
 library(shinycssloaders)
 library(shinycustomloader)
@@ -22,8 +11,6 @@ library(shinythemes)
 library(shinyjs)
 library(shinyalert)
 library(markdown)
-library(DT)
-library(tidyverse)
 library(plotly)
 
 
@@ -85,7 +72,7 @@ shinyUI(fluidPage(
                                             tabPanel("Genes", withSpinner(DT::dataTableOutput("gene_table"))),
                                             tabPanel("SNPs", withSpinner(DT::dataTableOutput("snp_gene_table"))))
                             )
-                        )
+                        ),
                ),
 
                tabPanel("Upload results", fluid = TRUE, icon = icon("file-upload"),
@@ -95,7 +82,7 @@ shinyUI(fluidPage(
                             # Sidebar panel for inputs ----
                             sidebarPanel(
 
-                                fileInput("custom_genes", "(Required) Upload table of gene-locus pairs",
+                                fileInput("custom_genes", "(Required) Upload table of gene-loci pairs",
                                           accept = c("text/csv",
                                                      "text/comma-separated-values,
                                                             text/plain", ".csv")),
@@ -162,7 +149,7 @@ shinyUI(fluidPage(
                                                      numericInput("gene_interp", "Minimum number of interpolation points for displayed gene-level smoothing:", 100, min = 25)
                                                      ))
                             )
-                        )
+                        ),
                ),
 
                # Now display the tab for the ASD results (our paper's results)
