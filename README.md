@@ -1,6 +1,6 @@
 # Overview of manuscript repository
 
-This repository contains the code for reproducing the results and figures in _An approach to gene-based testing accounting for dependence of tests among nearby genes_.
+This repository contains the code for reproducing the results and figures in [_An approach to gene-based testing accounting for dependence of tests among nearby genes_](https://github.com/ryurko/Agglomerative-LD-loci-testing/blob/master/manuscript.pdf).
 
 The folders are organized in the following manner:
 
